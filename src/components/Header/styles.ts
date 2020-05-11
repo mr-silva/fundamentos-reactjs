@@ -22,6 +22,7 @@ export const Container = styled.div<ContainerProps>`
         text-decoration: none;
         font-size: 16px;
         transition: opacity 0.2s;
+        opacity: 0.8;
 
         & + a {
           margin-left: 32px;
@@ -31,6 +32,12 @@ export const Container = styled.div<ContainerProps>`
           opacity: 0.6;
         }
       }
+    }
+
+    .selected {
+      border-bottom: 2px solid #ff872c;
+      padding-bottom: 10px;
+      opacity: 1;
     }
   }
 `;

@@ -7,7 +7,7 @@ import Header from '../../components/Header';
 import FileList from '../../components/FileList';
 import Upload from '../../components/Upload';
 
-import { Container, Title, ImportFileContainer, Footer } from './styles';
+import { Container, Title, ImportFileContainer, Footer, Error } from './styles';
 
 import alert from '../../assets/alert.svg';
 import api from '../../services/api';
@@ -20,22 +20,43 @@ interface FileProps {
 
 const Import: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<FileProps[]>([]);
+  const [exportError, setExportError] = useState('');
   const history = useHistory();
 
   async function handleUpload(): Promise<void> {
-    // const data = new FormData();
+    if (!uploadedFiles.length) {
+      setExportError(
+        'Erro: É necessário ao menos um arquivo para poder importar.',
+      );
+      return;
+    }
 
-    // TODO
+    const data = new FormData();
+
+    const { file, name: fileName } = uploadedFiles[0];
+
+    data.append('file', file, fileName);
 
     try {
-      // await api.post('/transactions/import', data);
+      await api.post('/transactions/import', data);
+
+      history.push('/');
+      setExportError('');
     } catch (err) {
-      // console.log(err.response.error);
+      setExportError(
+        'Erro: Falha ao importar arquivo, campos incorretos ou arquivo vazio.',
+      );
     }
   }
 
   function submitFile(files: File[]): void {
-    // TODO
+    const filesUpload = files.map((file: File) => ({
+      file,
+      name: file.name,
+      readableSize: filesize(file.size),
+    }));
+
+    setUploadedFiles(filesUpload);
   }
 
   return (
@@ -56,6 +77,7 @@ const Import: React.FC = () => {
               Enviar
             </button>
           </Footer>
+          {exportError && <Error>{exportError}</Error>}
         </ImportFileContainer>
       </Container>
     </>
